@@ -139,7 +139,7 @@ class SimpleDocumentIngestor:
         tokens = re.findall(r'\S+', text)
         return tokens
     
-    def chunk_text_by_tokens(self, text: str, chunk_size: int = None, overlap: int = 50) -> List[str]:
+    def chunk_text_by_tokens(self, text: str, chunk_size: Optional[int] = None, overlap: int = 50) -> List[str]:
         """
         ✂️ Split text into overlapping token-based chunks.
         

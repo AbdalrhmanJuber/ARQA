@@ -1,0 +1,58 @@
+{
+  "model_name": "abdoelsayed/AraDPR",
+  "documents": [
+    {
+      "id": "doc_0",
+      "content": "الذكاء الاصطناعي هو تقنية حديثة تحاكي الذكاء البشري في الآلات والحاسوب",
+      "meta": {
+        "source": "tech_article_1",
+        "title": "مقدمة في الذكاء الاصطناعي"
+      },
+      "chunk_id": 1
+    },
+    {
+      "id": "doc_1",
+      "content": "الطب الحديث يستخدم التكنولوجيا المتقدمة لتشخيص الأمراض وعلاج المرضى",
+      "meta": {
+        "source": "medical_article_1",
+        "title": "التكنولوجيا في الطب"
+      },
+      "chunk_id": 1
+    },
+    {
+      "id": "doc_2",
+      "content": "اللغة العربية لها تاريخ عريق وثقافة غنية تمتد لآلاف السنين",
+      "meta": {
+        "source": "culture_article_1",
+        "title": "تاريخ اللغة العربية"
+      },
+      "chunk_id": 1
+    },
+    {
+      "id": "doc_3",
+      "content": "التعليم الإلكتروني أصبح جزءاً مهماً من النظام التعليمي في العصر الحديث",
+      "meta": {
+        "source": "education_article_1",
+        "title": "التعليم الرقمي"
+      },
+      "chunk_id": 1
+    },
+    {
+      "id": "doc_4",
+      "content": "الطاقة المتجددة مثل الطاقة الشمسية وطاقة الرياح هي مستقبل الطاقة",
+      "meta": {
+        "source": "energy_article_1",
+        "title": "الطاقة البديلة"
+      },
+      "chunk_id": 1
+    }
+  ],
+  "id_to_doc": {
+    "doc_0": 0,
+    "doc_1": 1,
+    "doc_2": 2,
+    "doc_3": 3,
+    "doc_4": 4
+  },
+  "total_documents": 5
+}

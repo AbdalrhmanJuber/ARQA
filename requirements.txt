@@ -1,14 +1,39 @@
-# ✅ WORKING - Basic HTML Processing
+# filepath: c:\Users\a-ahm\Desktop\arqa\requirements.txt
+# ARQA - Arabic Question Answering System Requirements
+
+# ✅ WORKING - Basic HTML Processing (Phase 1)
 beautifulsoup4
 lxml
 
-# 🔄 TODO - Advanced Features (Complex Dependencies)
+# 🔄 RETRIEVAL - Document Retrieval (Phase 2)
+# Uncomment these for retriever functionality:
+# torch>=1.9.0
+# transformers>=4.20.0
+# faiss-cpu>=1.7.0  # Use faiss-gpu if you have CUDA
+# tqdm>=4.64.0
+# numpy>=1.21.0
+
+# 🔄 TODO - Advanced Features (Phase 3-4)
+# For complex ingestion:
 # farasa==0.0.1
 # camel-tools==1.4.1
-# transformers
 # haystack[faiss]
+
+# For API interface:
 # fastapi
 # uvicorn[standard]
-# torch
 # pydantic
 # python-multipart
+
+# =====================================
+# INSTALLATION GUIDE:
+# =====================================
+# 
+# Phase 1 (Basic HTML Processing):
+# pip install beautifulsoup4 lxml
+#
+# Phase 2 (Add Document Retrieval):
+# pip install torch transformers faiss-cpu tqdm numpy
+#
+# Phase 3 (Full System):
+# pip install -r requirements.txt  # (uncomment all packages)
