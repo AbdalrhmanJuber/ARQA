@@ -1,6 +1,62 @@
-# ARQA - Arabic Question Answering System
+# 🎯 ARQA - Arabic Question Answering System
 
-A comprehensive system for Arabic text processing, retrieval, and question answering using state-of-the-art NLP techniques.
+A system for processing Arabic HTML documents and answering questions about their content.
+
+## 🚀 What Works Right Now
+
+✅ **Arabic HTML Processing** - Convert HTML documents to searchable text
+
+```bash
+# Install basic requirements
+pip install beautifulsoup4 lxml
+
+# Run the demo
+python test_html_demo.py
+```
+
+## 📁 Simple Project Structure
+
+```
+src/arqa/
+├── simple_ingest.py    # ✅ Working HTML processor
+├── ingest.py          # ❌ Advanced version (needs complex setup)
+├── retriever.py       # 🔄 Document search (TODO)
+├── reader.py          # 🔄 Question answering (TODO)  
+└── api.py             # 🔄 Web API (TODO)
+
+test_html_demo.py      # ✅ Working demo
+```
+
+## 🎮 Try It Out
+
+The demo will:
+1. Create sample Arabic HTML files
+2. Process them into clean, searchable text
+3. Show processing statistics
+4. Save results to `test_output/`
+
+## 📚 Learn More
+
+- 📖 **[Simple Explanation](SIMPLE_EXPLANATION.md)** - What is this system?
+- 📁 **[HTML Processing Guide](HTML_INGESTION_GUIDE.md)** - Technical details
+- 📊 **[Success Report](INGESTION_SUCCESS_REPORT.md)** - What's working now
+
+## 🔧 Next Steps
+
+The system is built in phases:
+1. ✅ **HTML Processing** (DONE - working!)
+2. 🔄 **Document Search** (TODO)  
+3. 🔄 **Question Answering** (TODO)
+4. 🔄 **Web Interface** (TODO)
+
+## 💡 Example
+
+Input: Arabic HTML file → Output: Clean searchable text
+
+```
+HTML: <h1>الذكاء الاصطناعي</h1><p>تطور سريع...</p>
+JSON: {"content": "الذكاء الاصطناعي تطور سريع...", "title": "الذكاء الاصطناعي"}
+```
 
 ## 🏗️ System Architecture
 
@@ -60,6 +116,25 @@ For comprehensive documentation covering implementation details, configuration o
 - `POST /update-embeddings` - Refresh document embeddings
 
 ## 🚀 Quick Start
+
+### 📄 HTML Article Processing (Enhanced)
+
+The ARQA system now includes enhanced HTML ingestion with Arabic text normalization:
+
+```python
+from src.arqa.ingest import DocumentIngestor
+
+# Initialize enhanced ingestor
+ingestor = DocumentIngestor()
+
+# Process HTML articles from directory
+ingestor.ingest_from_directory("./html_articles")
+ingestor.save_index()
+```
+
+🎯 **[Complete HTML Ingestion Guide](HTML_INGESTION_GUIDE.md)** - Detailed setup and usage
+
+### 🖥️ Server Setup
 
 1. **Install Dependencies**:
 ```powershell

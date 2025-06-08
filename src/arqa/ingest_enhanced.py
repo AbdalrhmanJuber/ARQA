@@ -190,7 +190,7 @@ class DocumentIngestor:
         
         return chunks
     
-    def preprocess_document(self, text: str, metadata: Optional[Dict[str, Any]] = None) -> List[Document]:
+    def preprocess_document(self, text: str, metadata: Dict[str, Any] = None) -> List[Document]:
         """
         🔄 Preprocess a single document with Arabic normalization.
         
@@ -225,7 +225,7 @@ class DocumentIngestor:
         
         return documents
     
-    def ingest_html_file(self, file_path: str, metadata: Optional[Dict[str, Any]] = None) -> None:
+    def ingest_html_file(self, file_path: str, metadata: Dict[str, Any] = None) -> None:
         """
         📄 Ingest a single HTML file.
         

@@ -6,9 +6,18 @@ A comprehensive system for Arabic text processing, retrieval, and question answe
 __version__ = "0.1.0"
 __author__ = "ARQA Team"
 
-from .ingest import DocumentIngestor
-from .retriever import DocumentRetriever
-from .reader import QuestionAnswerer
+# ✅ Working imports (no complex dependencies)
+try:
+    from .simple_ingest import SimpleDocumentIngestor
+    __all__ = ['SimpleDocumentIngestor']
+except ImportError:
+    __all__ = []
+
+# 🔄 Advanced imports (require complex dependencies)
+# Uncomment when dependencies are installed:
+# from .ingest import DocumentIngestor
+# from .retriever import DocumentRetriever  
+# from .reader import QuestionAnswerer
 from .api import create_app
 
 __all__ = [

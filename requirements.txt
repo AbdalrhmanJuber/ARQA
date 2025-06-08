@@ -1,9 +1,14 @@
-camel-tools
-farasa==0.0.9
-transformers
-haystack[faiss]
-fastapi
-uvicorn[standard]
-torch
-pydantic
-python-multipart
+# ✅ WORKING - Basic HTML Processing
+beautifulsoup4
+lxml
+
+# 🔄 TODO - Advanced Features (Complex Dependencies)
+# farasa==0.0.1
+# camel-tools==1.4.1
+# transformers
+# haystack[faiss]
+# fastapi
+# uvicorn[standard]
+# torch
+# pydantic
+# python-multipart
