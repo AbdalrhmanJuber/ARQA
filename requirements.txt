@@ -1,33 +1,46 @@
 # filepath: c:\Users\a-ahm\Desktop\arqa\requirements.txt
 # ARQA - Arabic Question Answering System Requirements
 
-# ✅ WORKING - Basic HTML Processing (Phase 1)
-beautifulsoup4
-lxml
+# ✅ COMPLETE - Basic HTML Processing (Phase 1)
+beautifulsoup4>=4.11.0
+lxml>=4.9.0
 
-# 🔄 RETRIEVAL - Document Retrieval (Phase 2)
-# Uncomment these for retriever functionality:
-# torch>=1.9.0
-# transformers>=4.20.0
-# faiss-cpu>=1.7.0  # Use faiss-gpu if you have CUDA
-# tqdm>=4.64.0
-# numpy>=1.21.0
+# ✅ COMPLETE - Document Retrieval (Phase 2)
+torch>=1.9.0
+transformers>=4.20.0
+faiss-cpu>=1.7.0  # Use faiss-gpu if you have CUDA
+tqdm>=4.64.0
+numpy>=1.21.0
 
-# 🔄 TODO - Advanced Features (Phase 3-4)
-# For complex ingestion:
-# farasa==0.0.1
-# camel-tools==1.4.1
-# haystack[faiss]
+# ✅ COMPLETE - Question Answering (Phase 3)
+# Core QA dependencies (already covered by transformers and torch above)
 
-# For API interface:
-# fastapi
-# uvicorn[standard]
-# pydantic
-# python-multipart
+# 🔧 ADVANCED ARABIC NLP - Optional Advanced Features
+# Advanced Arabic text processing
+camel-tools==1.4.1
+farasa==0.0.1
+
+# Additional dependencies for camel-tools
+# Required for camel-tools morphological analysis
+cython>=0.29.0
+scikit-learn>=1.0.0
+requests>=2.25.0
+
+# 🔄 TODO - API Interface (Phase 4)
+# For web API interface:
+# fastapi>=0.95.0
+# uvicorn[standard]>=0.20.0
+# pydantic>=1.10.0
+# python-multipart>=0.0.5
 
 # =====================================
 # INSTALLATION GUIDE:
 # =====================================
+# 
+# Quick Install (All Dependencies):
+# pip install -r requirements.txt
+#
+# Phase-by-Phase Installation:
 # 
 # Phase 1 (Basic HTML Processing):
 # pip install beautifulsoup4 lxml
@@ -35,5 +48,14 @@ lxml
 # Phase 2 (Add Document Retrieval):
 # pip install torch transformers faiss-cpu tqdm numpy
 #
-# Phase 3 (Full System):
-# pip install -r requirements.txt  # (uncomment all packages)
+# Phase 3 (Question Answering - COMPLETE):
+# pip install torch transformers faiss-cpu tqdm numpy beautifulsoup4 lxml
+#
+# Advanced Arabic NLP (Optional):
+# pip install camel-tools==1.4.1 farasa==0.0.1 cython scikit-learn requests
+#
+# Note: camel-tools requires additional model downloads:
+# python -c "import camel_tools.data; camel_tools.data.download_disambig_model()"
+#
+# Phase 4 (API Interface - TODO):
+# pip install fastapi uvicorn pydantic python-multipart
