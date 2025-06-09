@@ -18,7 +18,7 @@ class SimpleDocumentIngestor:
     
     def __init__(self, 
                  output_dir: str = "processed_documents",
-                 chunk_size: int = 200):
+                 chunk_size: int = 500):
         """
         🔧 Initialize the simplified document ingestor with PyArabic.
         
