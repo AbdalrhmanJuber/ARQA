@@ -119,7 +119,7 @@ class OptimizedArabicRetriever:
         
         print(f"✅ Optimized Retriever initialized with {len(self.documents)} documents")
     
-    def _get_document_hash(self, content: str, meta: Dict[str, Any] = None) -> str:
+    def _get_document_hash(self, content: str, meta: Optional[Dict[str, Any]] = None) -> str:
         """Generate hash for document deduplication including metadata."""
         # Include both content and source URL in hash to allow same content from different sources
         hash_content = content
@@ -341,8 +341,7 @@ class OptimizedArabicRetriever:
             dimension = new_embeddings.shape[1]
             print(f"📊 Creating new FAISS index with dimension {dimension}")
             self.index = faiss.IndexFlatIP(dimension)
-        
-        # Normalize new embeddings for cosine similarity
+          # Normalize new embeddings for cosine similarity
         faiss.normalize_L2(new_embeddings)
         
         # Add only new embeddings to index
@@ -380,12 +379,11 @@ class OptimizedArabicRetriever:
         
         # Fast query encoding
         query_embedding = self.encode_text_batch([query], is_query=True, show_progress=False)
-        
-        # Normalize for cosine similarity
+          # Normalize for cosine similarity
         faiss.normalize_L2(query_embedding)
         
         # Search
-        scores, indices = self.index.search(query_embedding.astype(np.float32), top_k)
+        scores, indices = self.index.search(query_embedding.astype(np.float32), k=top_k)
         
         # Format results
         results = []

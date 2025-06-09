@@ -18,7 +18,7 @@ class SimpleDocumentIngestor:
     
     def __init__(self, 
                  output_dir: str = "processed_documents",
-                 chunk_size: int = 500):
+                 chunk_size: int = 200):
         """
         🔧 Initialize the simplified document ingestor with PyArabic.
         
@@ -52,21 +52,9 @@ class SimpleDocumentIngestor:
         # 📝 Extract title
         title = soup.find('title')
         title_text = title.get_text().strip() if title else "No Title"
-        
-        # 📄 Extract main content (prioritize article, main, or body)
-        content_selectors = ['article', 'main', '.content', '.article', 'body']
-        content = None
-        
-        for selector in content_selectors:
-            content = soup.select_one(selector)
-            if content:
-                break
-        
-        if not content:
-            content = soup
-        
-        # 🧹 Get clean text
-        text = content.get_text(separator=' ', strip=True)
+          # 📄 Extract all text content from the entire HTML document
+        # Get clean text from the entire document after removing unwanted elements
+        text = soup.get_text(separator=' ', strip=True)
         
         # 🏷️ Extract metadata
         metadata = {
@@ -129,6 +117,7 @@ class SimpleDocumentIngestor:
         # Additional Arabic-specific cleaning
         # Convert different forms of yaa
         normalized = normalized.replace('ى', 'ي')  # Alif maksura to yaa
+        
         
         # 🧽 Clean extra whitespace
         normalized = re.sub(r'\s+', ' ', normalized).strip()

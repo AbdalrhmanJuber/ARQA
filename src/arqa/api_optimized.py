@@ -263,6 +263,10 @@ async def get_status():
     if not arqa.initialized:
         await arqa.initialize()
     
+    # Get actual document count from retriever
+    actual_document_count = len(arqa.retriever.documents) if arqa.retriever else 0
+    arqa.document_count = actual_document_count  # Sync the counts
+    
     # Get indexing status
     indexing_status = arqa.retriever.get_indexing_status() if arqa.retriever else {}
     
@@ -308,11 +312,11 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         
         if not documents:
             raise HTTPException(status_code=400, detail="No content could be extracted from the file")
-        
-        # Add documents with background processing
+          # Add documents with background processing
         result = arqa.retriever.add_documents_incremental(documents, background=True)
         
-        arqa.document_count = result['total_documents']
+        # Update document count from retriever
+        arqa.document_count = len(arqa.retriever.documents)
         arqa.processing_stats['total_uploads'] += 1
         
         # If background processing, add to background tasks for monitoring
@@ -346,7 +350,10 @@ async def ask_question(request: QuestionRequest):
     if not arqa.initialized:
         await arqa.initialize()
     
-    if arqa.document_count == 0:
+    # Check actual document count from retriever
+    actual_document_count = len(arqa.retriever.documents) if arqa.retriever else 0
+    
+    if actual_document_count == 0:
         raise HTTPException(status_code=400, detail="No documents uploaded yet. Please upload documents first.")
     
     start_time = datetime.now()
@@ -435,10 +442,14 @@ async def list_documents():
     if not arqa.initialized:
         await arqa.initialize()
     
-    stats = arqa.retriever.get_stats()
+    # Get actual document count from retriever
+    actual_document_count = len(arqa.retriever.documents) if arqa.retriever else 0
+    arqa.document_count = actual_document_count  # Sync the counts
+    
+    stats = arqa.retriever.get_stats() if arqa.retriever else {}
     
     return {
-        "total_documents": arqa.document_count,
+        "total_documents": actual_document_count,
         "indexed_documents": stats.get('index_size', 0),
         "cached_embeddings": stats.get('cached_embeddings', 0),
         "retriever_status": "ready" if arqa.retriever else "not_initialized",
@@ -452,10 +463,14 @@ async def clear_documents():
         await arqa.initialize()
     
     try:
+        # Get current settings before reinitializing
+        current_device = arqa.retriever.device if arqa.retriever else "cpu"
+        current_batch_size = arqa.retriever.batch_size if arqa.retriever else 32
+        
         # Reinitialize retriever to clear documents
         arqa.retriever = OptimizedArabicRetriever(
-            device=arqa.retriever.device,
-            batch_size=arqa.retriever.batch_size
+            device=current_device,
+            batch_size=current_batch_size
         )
         arqa.document_count = 0
         

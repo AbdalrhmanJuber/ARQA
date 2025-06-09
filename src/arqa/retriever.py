@@ -179,6 +179,9 @@ class ArabicDocumentRetriever:
                     # Mean pooling
                     attention_mask = inputs['attention_mask']
                     token_embeddings = outputs.last_hidden_state
+                    # Convert attention_mask to tensor if it's not already
+                    if not isinstance(attention_mask, torch.Tensor):
+                        attention_mask = torch.tensor(attention_mask).to(self.device)
                     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
                     batch_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
                     batch_embeddings = batch_embeddings.cpu().numpy()

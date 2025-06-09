@@ -20,7 +20,7 @@ class SimpleArabicQA:
     Works without Haystack dependency.
     """
     def __init__(self, 
-                 model_name: str = "deepset/xlm-roberta-base-squad2",
+                 model_name: str = "zohaib99k/Bert_Arabic-SQuADv2-QA",
                  max_seq_len: int = 512,
                  doc_stride: int = 128,
                  max_answer_len: int = 100):
@@ -264,10 +264,12 @@ def create_arabic_qa_system(model_name: Optional[str] = None) -> SimpleArabicQA:
     if model_name is None:
         # Try different models in order of preference for Arabic support
         models_to_try = [
+            "ZeyadAhmed/AraElectra-Arabic-SQuADv2-QA",
             "deepset/xlm-roberta-base-squad2",                   # Multilingual QA model (supports Arabic)
             "aubmindlab/bert-base-arabertv02",                   # AraBERT base model
             "asafaya/bert-base-arabic",                          # Arabic BERT alternative
-            "distilbert-base-cased-distilled-squad"              # English fallback (still works with Arabic)
+            "distilbert-base-cased-distilled-squad",
+            "zohaib99k/Bert_Arabic-SQuADv2-QA"
         ]
         
         for model in models_to_try:
