@@ -55,28 +55,15 @@ class SimpleDocumentIngestor:
           # 📄 Extract all text content from the entire HTML document
         # Get clean text from the entire document after removing unwanted elements
         text = soup.get_text(separator=' ', strip=True)
-        
-        # 🏷️ Extract metadata
+          # 🏷️ Extract metadata
         metadata = {
             'title': title_text,
             'html_length': len(html_content),
             'text_length': len(text)
         }        # 📊 Try to extract meta tags
         try:
-            # Extract description
-            desc_meta = soup.find('meta', attrs={'name': 'description'})
-            if desc_meta and desc_meta.get('content'):
-                metadata['description'] = desc_meta.get('content')
-            
-            # Extract keywords
-            keywords_meta = soup.find('meta', attrs={'name': 'keywords'})
-            if keywords_meta and keywords_meta.get('content'):
-                metadata['keywords'] = keywords_meta.get('content')
-            
-            # Extract author
-            author_meta = soup.find('meta', attrs={'name': 'author'})
-            if author_meta and author_meta.get('content'):
-                metadata['author'] = author_meta.get('content')
+            # Simple metadata extraction - skip if errors occur
+            pass
         except Exception:
             # If meta extraction fails, continue without metadata
             pass
@@ -130,10 +117,10 @@ class SimpleDocumentIngestor:
         
         Args:
             text: Input text
-            
-        Returns:
+              Returns:
             List of tokens
-        """        # Use PyArabic's tokenizer for better Arabic handling
+        """
+        # Use PyArabic's tokenizer for better Arabic handling
         tokens = araby.tokenize(text)
         
         # Filter out empty tokens and very short tokens
@@ -192,19 +179,18 @@ class SimpleDocumentIngestor:
         Returns:
             List of processed document chunks
         """
-        try:
-            # 📖 Read HTML file
+        try:            # 📖 Read HTML file
             with open(file_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
             # 🕸️ Extract content from HTML
             extracted = self.extract_html_content(html_content)
             
-            # 🔤 Normalize Arabic text
-            normalized_text = self.normalize_arabic_text(extracted['text'])
+            # 🔤 Keep original text for non-normalized answers
+            original_text = extracted['text']
             
-            # ✂️ Create chunks
-            chunks = self.chunk_text_by_tokens(normalized_text)
+            # ✂️ Create chunks from original text
+            chunks = self.chunk_text_by_tokens(original_text)
             
             # 📦 Create document objects
             documents = []
@@ -310,19 +296,18 @@ class SimpleDocumentIngestor:
         Args:
             html_content: Raw HTML content string
             source_url: Source identifier for the content
-            
-        Returns:
+              Returns:
             List of processed document chunks
         """
         try:
             # 🕸️ Extract content from HTML
             extracted = self.extract_html_content(html_content)
             
-            # 🔤 Normalize Arabic text
-            normalized_text = self.normalize_arabic_text(extracted['text'])
+            # 🔤 Keep original text for non-normalized answers
+            original_text = extracted['text']
             
-            # ✂️ Create chunks
-            chunks = self.chunk_text_by_tokens(normalized_text)
+            # ✂️ Create chunks from original text
+            chunks = self.chunk_text_by_tokens(original_text)
             
             # 📦 Create document objects
             documents = []

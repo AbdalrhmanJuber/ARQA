@@ -112,22 +112,22 @@ class SimpleArabicQA:
             context: Context text in Arabic
             top_k: Number of answer candidates to return
             min_score: Minimum confidence score
-            
-        Returns:
+              Returns:
             List of answer candidates with scores
         """
         if not question.strip() or not context.strip():
             return []
         
-        # Normalize inputs
-        question = self.normalize_arabic_text(question)
-        context = self.normalize_arabic_text(context)
+        # Keep original context to preserve non-normalized answers
+        # Only normalize question for better matching (optional)
+        original_context = context
+        normalized_question = self.normalize_arabic_text(question)
         
         try:
-            # Process with the QA pipeline
+            # Process with the QA pipeline using original context
             result = self.qa_pipeline({
-                'question': question,
-                'context': context
+                'question': normalized_question,
+                'context': original_context
             })
             
             # The pipeline returns a single dict, not a list

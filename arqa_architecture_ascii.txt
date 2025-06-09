@@ -1,0 +1,86 @@
+```
+ARQA System Architecture Overview
+=====================================
+
+┌─────────────────┐    ┌─────────────────┐
+│  HTML Documents │    │  User Questions │
+│   (Arabic Web   │    │   (Arabic Text) │
+│    Content)     │    │                 │
+└─────────┬───────┘    └─────────┬───────┘
+          │                      │
+          ▼                      │
+┌─────────────────────────────────▼──────┐
+│        DOCUMENT PROCESSING              │
+│  ┌─────────────┐  ┌─────────────────┐  │
+│  │ HTML Parser │  │ Text Extraction │  │
+│  │(BeautifulSoup)│  │ & Preservation │  │
+│  └─────────────┘  └─────────────────┘  │
+│  ┌─────────────────────────────────────┐│
+│  │    Chunking (200 tokens/50 overlap)││
+│  └─────────────────────────────────────┘│
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│          SEMANTIC INDEXING              │
+│  ┌─────────────┐  ┌─────────────────┐  │
+│  │   AraDPR    │  │  FAISS Vector   │  │ 
+│  │  Encoder    │  │     Index       │  │
+│  │(768-dim)    │  │  (Incremental)  │  │
+│  └─────────────┘  └─────────────────┘  │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│         QUERY PROCESSING                │
+│  ┌─────────────┐  ┌─────────────────┐  │
+│  │   Question  │  │   Similarity    │  │
+│  │ Normalization│  │   Search &      │  │
+│  │   (Light)   │  │  Top-K Retrieval│  │
+│  └─────────────┘  └─────────────────┘  │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│        ANSWER EXTRACTION                │
+│  ┌─────────────────────────────────────┐│
+│  │        Multi-Model QA System       ││
+│  │  ┌─────────────┐ ┌──────────────┐ ││
+│  │  │Arabic BERT  │ │ AraELECTRA   │ ││
+│  │  │  (Primary)  │ │  (Fallback)  │ ││
+│  │  └─────────────┘ └──────────────┘ ││
+│  └─────────────────────────────────────┘│
+│  ┌─────────────────────────────────────┐│
+│  │  Non-normalized Context Processing ││
+│  │     + Span Prediction & Scoring    ││
+│  └─────────────────────────────────────┘│
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│            API LAYER                    │
+│  ┌─────────────┐  ┌─────────────────┐  │
+│  │   FastAPI   │  │   Background    │  │
+│  │    REST     │  │   Processing    │  │
+│  │  Interface  │  │  & Monitoring   │  │
+│  └─────────────┘  └─────────────────┘  │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────┐
+│              OUTPUT                     │
+│  ┌─────────────────────────────────────┐│
+│  │   Ranked Answers with Confidence   ││
+│  │ + Original Arabic Character        ││
+│  │      Preservation                  ││
+│  │ + Document Context & Metadata      ││
+│  └─────────────────────────────────────┘│
+└─────────────────────────────────────────┘
+
+Key Features:
+• Text Authenticity Preservation
+• Incremental FAISS Indexing  
+• Multi-model Fallback Strategy
+• Background Processing Support
+• Sub-130ms Response Time
+```
