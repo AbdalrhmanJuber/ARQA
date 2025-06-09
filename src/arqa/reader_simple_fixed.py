@@ -9,6 +9,7 @@ import torch
 from transformers import pipeline
 from tqdm import tqdm
 import warnings
+from pyarabic import araby
 
 # Suppress some warnings for cleaner output
 warnings.filterwarnings("ignore", category=UserWarning)

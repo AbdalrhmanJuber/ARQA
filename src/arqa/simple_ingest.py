@@ -1,6 +1,6 @@
 """
 Simplified HTML Ingestion Module for ARQA
-Works without complex C++ dependencies like camel-kenlm
+Enhanced with PyArabic for better Arabic text normalization
 """
 
 from typing import List, Dict, Any, Optional
@@ -10,16 +10,17 @@ import json
 from pathlib import Path
 import unicodedata
 from bs4 import BeautifulSoup
+import pyarabic.araby as araby
 
 
 class SimpleDocumentIngestor:
-    """🚀 Simplified Arabic HTML document preprocessing and ingestion."""
+    """🚀 Simplified Arabic HTML document preprocessing and ingestion with PyArabic."""
     
     def __init__(self, 
                  output_dir: str = "processed_documents",
                  chunk_size: int = 200):
         """
-        🔧 Initialize the simplified document ingestor.
+        🔧 Initialize the simplified document ingestor with PyArabic.
         
         Args:
             output_dir: Directory to store processed documents
@@ -29,21 +30,8 @@ class SimpleDocumentIngestor:
         self.output_dir.mkdir(exist_ok=True)
         self.chunk_size = chunk_size
         
-        # 📋 Arabic normalization patterns
-        self.normalization_patterns = [
-            # Hamza normalization
-            (r'[أإآ]', 'ا'),  # Different alif forms to standard alif
-            (r'ؤ', 'و'),      # Hamza on waw to waw
-            (r'ئ', 'ي'),      # Hamza on yaa to yaa
-            (r'ة', 'ه'),      # Ta marbuta to ha
-            (r'ى', 'ي'),      # Alif maksura to yaa
-            # Remove diacritics
-            (r'[\u064B-\u0652\u0670\u0640]', ''),  # Tashkeel and tatweel
-            # Normalize spaces
-            (r'\s+', ' '),    # Multiple spaces to single
-           
-            
-        ]
+        # 📋 Using PyArabic for enhanced Arabic text normalization
+        print("🔧 Using PyArabic for enhanced Arabic text normalization")
     
     def extract_html_content(self, html_content: str) -> Dict[str, Any]:
         """
@@ -85,17 +73,25 @@ class SimpleDocumentIngestor:
             'title': title_text,
             'html_length': len(html_content),
             'text_length': len(text)
-        }
-        
-        # 📊 Try to extract meta tags
-        meta_tags = soup.find_all('meta')
-        for meta in meta_tags:
-            if meta.get('name') == 'description':
-                metadata['description'] = meta.get('content', '')
-            elif meta.get('name') == 'keywords':
-                metadata['keywords'] = meta.get('content', '')
-            elif meta.get('name') == 'author':
-                metadata['author'] = meta.get('content', '')
+        }        # 📊 Try to extract meta tags
+        try:
+            # Extract description
+            desc_meta = soup.find('meta', attrs={'name': 'description'})
+            if desc_meta and desc_meta.get('content'):
+                metadata['description'] = desc_meta.get('content')
+            
+            # Extract keywords
+            keywords_meta = soup.find('meta', attrs={'name': 'keywords'})
+            if keywords_meta and keywords_meta.get('content'):
+                metadata['keywords'] = keywords_meta.get('content')
+            
+            # Extract author
+            author_meta = soup.find('meta', attrs={'name': 'author'})
+            if author_meta and author_meta.get('content'):
+                metadata['author'] = author_meta.get('content')
+        except Exception:
+            # If meta extraction fails, continue without metadata
+            pass
         
         return {
             'text': text,
@@ -104,13 +100,13 @@ class SimpleDocumentIngestor:
     
     def normalize_arabic_text(self, text: str) -> str:
         """
-        🔤 Normalize Arabic text using simple patterns.
+        🔤 Normalize Arabic text using PyArabic library.
         
         Args:
             text: Raw Arabic text
             
         Returns:
-            Normalized Arabic text
+            Normalized Arabic text using PyArabic
         """
         if not text:
             return ""
@@ -118,9 +114,21 @@ class SimpleDocumentIngestor:
         # 📐 Apply Unicode normalization first
         normalized = unicodedata.normalize('NFKC', text)
         
-        # 🔄 Apply Arabic-specific normalizations
-        for pattern, replacement in self.normalization_patterns:
-            normalized = re.sub(pattern, replacement, normalized)
+        # 🔄 Use PyArabic for comprehensive Arabic text normalization
+        # Remove diacritics (tashkeel)
+        normalized = araby.strip_tashkeel(normalized)
+        
+        # Remove tatweel (kashida) - elongation character
+        normalized = araby.strip_tatweel(normalized)
+        
+        # Normalize Arabic letters (hamza forms, etc.)
+        normalized = araby.normalize_hamza(normalized)
+        normalized = araby.normalize_alef(normalized)
+        normalized = araby.normalize_teh(normalized)
+        
+        # Additional Arabic-specific cleaning
+        # Convert different forms of yaa
+        normalized = normalized.replace('ى', 'ي')  # Alif maksura to yaa
         
         # 🧽 Clean extra whitespace
         normalized = re.sub(r'\s+', ' ', normalized).strip()
@@ -129,18 +137,21 @@ class SimpleDocumentIngestor:
     
     def simple_tokenize(self, text: str) -> List[str]:
         """
-        🔤 Simple Arabic-aware tokenization.
+        🔤 Arabic-aware tokenization using PyArabic.
         
         Args:
             text: Input text
             
         Returns:
             List of tokens
-        """
-        # Split by whitespace and punctuation
-        tokens = re.findall(r'\S+', text)
+        """        # Use PyArabic's tokenizer for better Arabic handling
+        tokens = araby.tokenize(text)
+        
+        # Filter out empty tokens and very short tokens
+        tokens = [token.strip() for token in tokens if token.strip() and len(token.strip()) > 1]
+        
         return tokens
-    
+
     def chunk_text_by_tokens(self, text: str, chunk_size: Optional[int] = None, overlap: int = 50) -> List[str]:
         """
         ✂️ Split text into overlapping token-based chunks.
