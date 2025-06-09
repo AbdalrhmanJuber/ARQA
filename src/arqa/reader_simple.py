@@ -20,7 +20,7 @@ class SimpleArabicQA:
     Works without Haystack dependency.
     """
     def __init__(self, 
-                 model_name: str = "aubmindlab/bert-base-arabertv02-finetuned-squadv2",
+                 model_name: str = "deepset/xlm-roberta-base-squad2",
                  max_seq_len: int = 512,
                  doc_stride: int = 128,
                  max_answer_len: int = 100):
@@ -56,49 +56,46 @@ class SimpleArabicQA:
         except Exception as e:
             print(f"❌ Error loading model: {e}")
             print("🔄 Falling back to a different model...")
-              # Fallback to a smaller multilingual model
+            
+            # Fallback to a smaller multilingual model
             try:
-                self.model_name = "aubmindlab/bert-base-arabertv02-finetuned-squadv2"
+                self.model_name = "distilbert-base-cased-distilled-squad"
                 self.qa_pipeline = pipeline(
                     "question-answering",
                     model=self.model_name,
                     device=0 if torch.cuda.is_available() else -1,
                     max_answer_len=max_answer_len
                 )
-                print(f"✅ Arabic-specific model loaded: {self.model_name}")
+                print(f"✅ Fallback model loaded: {self.model_name}")
                 
-            except Exception as e2:
-                print(f"❌ Error loading Arabic model: {e2}")
-                
-                # Final fallback to basic distilbert
-                try:
-                    self.model_name = "distilbert-base-cased-distilled-squad"
-                    self.qa_pipeline = pipeline(
-                        "question-answering",
-                        model=self.model_name,
-                        device=0 if torch.cuda.is_available() else -1,
-                        max_answer_len=max_answer_len
-                    )
-                    print(f"✅ Final fallback model loaded: {self.model_name}")
-                    print(f"⚠️ Note: This model may have limited Arabic support")
-                    
-                except Exception as e3:
-                    print(f"❌ Error loading final fallback: {e3}")
-                    raise RuntimeError("Could not load any QA model")
+            except Exception as fallback_error:
+                print(f"❌ Fallback also failed: {fallback_error}")
+                raise RuntimeError(f"Could not load any QA model. Original error: {e}")
     
     def normalize_arabic_text(self, text: str) -> str:
-        """Normalize Arabic text for better processing."""
-        if not text:
-            return text
+        """
+        Basic Arabic text normalization.
         
-        # Basic Arabic normalization
-        text = re.sub(r'[إأآا]', 'ا', text)  # Normalize Alef
-        text = re.sub(r'ة', 'ه', text)       # Normalize Ta Marbuta
-        text = re.sub(r'ئ', 'ي', text)       # Normalize Ya
-        text = re.sub(r'ؤ', 'و', text)       # Normalize Waw
+        Args:
+            text: Input Arabic text
+            
+        Returns:
+            Normalized text
+        """
+        if not text:
+            return ""
+        
+        # Basic Arabic text normalization
+        # Remove diacritics (tashkeel)
+        text = re.sub(r'[\u064B-\u065F\u0670\u0640]', '', text)
+        
+        # Normalize some Arabic characters
+        text = re.sub(r'[أإآ]', 'ا', text)  # Normalize Alif
+        text = re.sub(r'[ىئ]', 'ي', text)   # Normalize Ya
+        text = re.sub(r'ة', 'ه', text)      # Normalize Ta Marbuta
         
         # Remove extra whitespace
-        text = ' '.join(text.split())
+        text = re.sub(r'\s+', ' ', text).strip()
         
         return text
     
@@ -128,16 +125,14 @@ class SimpleArabicQA:
         
         try:
             # Process with the QA pipeline
-            result = self.qa_pipeline(
-                question=question,
-                context=context
-            )
+            result = self.qa_pipeline({
+                'question': question,
+                'context': context
+            })
             
-            # Check if result meets minimum score requirement
-            if isinstance(result, list):
-                return [r for r in result if r.get('score', 0) >= min_score][:top_k]
-            elif result.get('score', 0) >= min_score:
-                return [result]
+            # The pipeline returns a single dict, not a list
+            if isinstance(result, dict) and result.get('score', 0) >= min_score:
+                return [result]  # Return as list for consistency
             else:
                 return []
                     
@@ -173,9 +168,8 @@ class SimpleArabicQA:
             
             if not doc_content.strip():
                 continue
-            
-            # Get answers from this document
-            answers = self.answer_question(question, doc_content, top_k=2)
+              # Get answers from this document
+            answers = self.answer_question(question, doc_content, top_k=2, min_score=0.01)
             
             # Add document information to answers
             for answer in answers:
@@ -269,12 +263,11 @@ def create_arabic_qa_system(model_name: Optional[str] = None) -> SimpleArabicQA:
     """
     if model_name is None:
         # Try different models in order of preference for Arabic support
-        # Updated to use models that work better with current transformers versions
         models_to_try = [
-            "aubmindlab/bert-base-arabertv02-finetuned-squadv2",  # AraBERT for Arabic QA
-            "CAMeL-Lab/bert-base-arabic-camelbert-mix-ner",       # CamelBERT fallback
-            "asafaya/bert-large-arabic",                          # Arabic BERT alternative
-            "distilbert-base-cased-distilled-squad"               # Final fallback
+            "deepset/xlm-roberta-base-squad2",                   # Multilingual QA model (supports Arabic)
+            "aubmindlab/bert-base-arabertv02",                   # AraBERT base model
+            "asafaya/bert-base-arabic",                          # Arabic BERT alternative
+            "distilbert-base-cased-distilled-squad"              # English fallback (still works with Arabic)
         ]
         
         for model in models_to_try:

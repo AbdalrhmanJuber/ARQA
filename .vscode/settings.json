@@ -1,0 +1,7 @@
+{
+    "terminal.integrated.fontFamily": "Cascadia Code, Consolas, 'Courier New', monospace",
+    "terminal.integrated.setLocaleVariables": true,
+    "files.encoding": "utf8",
+    "python.terminal.executeInFileDir": true
+
+}

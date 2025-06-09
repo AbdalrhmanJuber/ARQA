@@ -14,11 +14,12 @@ numpy>=1.21.0
 
 # ✅ COMPLETE - Question Answering (Phase 3)
 # Core QA dependencies (already covered by transformers and torch above)
+sentencepiece>=0.1.99  # Required for multilingual QA models
+protobuf>=3.19.0       # Required for XLM-RoBERTa models
 
 # 🔧 ADVANCED ARABIC NLP - Optional Advanced Features
 # Advanced Arabic text processing
 camel-tools==1.4.1
-farasa==0.0.1
 
 # Additional dependencies for camel-tools
 # Required for camel-tools morphological analysis
@@ -26,12 +27,12 @@ cython>=0.29.0
 scikit-learn>=1.0.0
 requests>=2.25.0
 
-# 🔄 TODO - API Interface (Phase 4)
+# 🔄 COMPLETE - API Interface (Phase 4)
 # For web API interface:
-# fastapi>=0.95.0
-# uvicorn[standard]>=0.20.0
-# pydantic>=1.10.0
-# python-multipart>=0.0.5
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
+pydantic>=1.10.0
+python-multipart>=0.0.5
 
 # =====================================
 # INSTALLATION GUIDE:
@@ -52,7 +53,7 @@ requests>=2.25.0
 # pip install torch transformers faiss-cpu tqdm numpy beautifulsoup4 lxml
 #
 # Advanced Arabic NLP (Optional):
-# pip install camel-tools==1.4.1 farasa==0.0.1 cython scikit-learn requests
+# pip install camel-tools==1.4.1 cython scikit-learn requests
 #
 # Note: camel-tools requires additional model downloads:
 # python -c "import camel_tools.data; camel_tools.data.download_disambig_model()"

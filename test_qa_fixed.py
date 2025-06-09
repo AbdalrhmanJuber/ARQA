@@ -47,7 +47,8 @@ def test_arabic_qa_model():
         print(f"\n--- Test Case {i} ---")
         question = test_case["question"]
         context = test_case["context"]
-          print(f"❓ Question: {question}")
+        
+        print(f"❓ Question: {question}")
         print(f"📖 Context: {context[:60]}...")
         
         try:

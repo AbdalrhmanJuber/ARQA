@@ -43,12 +43,39 @@ python test_qa_system.py
 python test_qa_simple.py
 ```
 
+### ✅ Phase 4: REST API Interface
+Complete FastAPI web service for Arabic question answering with document upload.
+
+```bash
+# Install API requirements
+pip install fastapi uvicorn pydantic python-multipart
+
+# Start the API server
+python run_api.py
+
+# Test all API endpoints
+python test_api.py
+
+# Test Arabic QA pipeline
+python test_arabic_qa.py
+```
+
+**🌐 API Endpoints:**
+- `GET /` - Welcome page with Arabic support
+- `GET /status` - System status and document count
+- `POST /upload` - Upload HTML documents for processing
+- `POST /ask` - Ask questions in Arabic and get answers
+- `GET /documents` - List processed documents
+- `GET /docs` - Interactive API documentation
+
 ## 📁 Project Structure
 
 ```
 src/arqa/
 ├── simple_ingest.py    # ✅ HTML processor with Arabic normalization
-├── retriever.py        # ✅ AraDPR + FAISS semantic search  
+├── retriever.py        # ✅ AraDPR + FAISS semantic search
+├── reader_simple.py    # ✅ XLM-RoBERTa Arabic QA system
+└── api.py              # ✅ FastAPI web interface
 ├── reader_simple.py    # ✅ Arabic Question Answering module
 ├── ingest.py          # 🔄 Advanced version (needs haystack)
 ├── reader.py          # 🔄 Advanced QA (needs haystack)

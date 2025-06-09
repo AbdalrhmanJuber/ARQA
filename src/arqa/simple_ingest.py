@@ -41,6 +41,8 @@ class SimpleDocumentIngestor:
             (r'[\u064B-\u0652\u0670\u0640]', ''),  # Tashkeel and tatweel
             # Normalize spaces
             (r'\s+', ' '),    # Multiple spaces to single
+           
+            
         ]
     
     def extract_html_content(self, html_content: str) -> Dict[str, Any]:
@@ -300,6 +302,50 @@ class SimpleDocumentIngestor:
                 'output_directory': str(self.output_dir),
                 'output_file': str(output_file)
             }
+    
+    def process_html_content(self, html_content: str, source_url: str = "uploaded_file") -> List[Dict[str, Any]]:
+        """
+        📄 Process HTML content directly (for API uploads).
+        
+        Args:
+            html_content: Raw HTML content string
+            source_url: Source identifier for the content
+            
+        Returns:
+            List of processed document chunks
+        """
+        try:
+            # 🕸️ Extract content from HTML
+            extracted = self.extract_html_content(html_content)
+            
+            # 🔤 Normalize Arabic text
+            normalized_text = self.normalize_arabic_text(extracted['text'])
+            
+            # ✂️ Create chunks
+            chunks = self.chunk_text_by_tokens(normalized_text)
+            
+            # 📦 Create document objects
+            documents = []
+            for i, chunk in enumerate(chunks):
+                doc = {
+                    'content': chunk,
+                    'metadata': {
+                        **extracted['metadata'],
+                        'source_file': source_url,
+                        'filename': source_url,
+                        'chunk_id': i,
+                        'total_chunks': len(chunks),
+                        'chunk_length': len(chunk.split())
+                    }
+                }
+                documents.append(doc)
+            
+            print(f"✅ Processed HTML content: {len(documents)} chunks")
+            return documents
+            
+        except Exception as e:
+            print(f"❌ Error processing HTML content: {e}")
+            return []
 
 
 # Create an alias for compatibility
