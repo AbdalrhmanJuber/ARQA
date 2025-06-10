@@ -12,11 +12,14 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 # Import and run the API
-from src.arqa.api import app
+try:
+    from src.arqa.api_optimized import app
+except ImportError:
+    from src.arqa.api import app
 import uvicorn
 
 if __name__ == "__main__":
-    print("🚀 Starting ARQA API Server...")
+    print("🚀 Starting ARQA API Server...")    
     print(f"📁 Project root: {project_root}")
     print("🌐 Server will be available at: http://localhost:8000")
     print("📖 API documentation at: http://localhost:8000/docs")
@@ -26,6 +29,5 @@ if __name__ == "__main__":
         app, 
         host="0.0.0.0", 
         port=8000, 
-        reload=True,
-        reload_dirs=[project_root]
+        reload=False
     )

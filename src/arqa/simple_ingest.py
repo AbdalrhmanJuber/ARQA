@@ -317,8 +317,7 @@ class SimpleDocumentIngestor:
                     'metadata': {
                         **extracted['metadata'],
                         'source_file': source_url,
-                        'filename': source_url,
-                        'chunk_id': i,
+                        'filename': source_url,                        'chunk_id': i,
                         'total_chunks': len(chunks),
                         'chunk_length': len(chunk.split())
                     }
@@ -331,7 +330,161 @@ class SimpleDocumentIngestor:
         except Exception as e:
             print(f"❌ Error processing HTML content: {e}")
             return []
-
+    
+    def extract_xml_content(self, xml_content: str) -> Dict[str, Any]:
+        """
+        🔧 Extract clean text and metadata from XML.
+        
+        Args:
+            xml_content: Raw XML string
+            
+        Returns:
+            Dict with cleaned text and metadata
+        """
+        try:
+            # Try XML parser first, fallback to html.parser if XML parser fails
+            try:
+                soup = BeautifulSoup(xml_content, 'xml')
+            except:
+                soup = BeautifulSoup(xml_content, 'html.parser')
+        except Exception as e:
+            print(f"⚠️ XML parsing warning: {e}")
+            # Fallback to simple text extraction
+            import re
+            text = re.sub(r'<[^>]+>', ' ', xml_content)
+            text = re.sub(r'\s+', ' ', text).strip()
+            return {
+                'text': text,
+                'metadata': {
+                    'title': 'XML Document',
+                    'xml_length': len(xml_content),
+                    'text_length': len(text),
+                    'file_type': 'xml'
+                }
+            }
+        
+        # 🗑️ Remove script and style elements if present
+        for script in soup(["script", "style"]):
+            script.decompose()
+        
+        # 📝 Try to extract title from various XML elements
+        title = None
+        title_candidates = ['title', 'name', 'header', 'subject', 'h1', 'h2']
+        for candidate in title_candidates:
+            title = soup.find(candidate)
+            if title:
+                break
+        
+        title_text = title.get_text().strip() if title else "XML Document"
+        
+        # 📄 Extract all text content from XML
+        text = soup.get_text(separator=' ', strip=True)
+          # 🏷️ Extract metadata
+        metadata = {
+            'title': title_text,
+            'xml_length': len(xml_content),
+            'text_length': len(text),
+            'file_type': 'xml'
+        }
+        
+        # 📊 Try to extract basic metadata
+        # Skip complex attribute extraction to avoid compatibility issues
+        
+        return {
+            'text': text,
+            'metadata': metadata
+        }
+    
+    def process_xml_content(self, xml_content: str, source_url: str = "uploaded_file") -> List[Dict[str, Any]]:
+        """
+        📄 Process XML content directly (for API uploads).
+        
+        Args:
+            xml_content: Raw XML content string
+            source_url: Source identifier for the content
+            
+        Returns:
+            List of processed document chunks
+        """
+        try:
+            # 🔧 Extract content from XML
+            extracted = self.extract_xml_content(xml_content)
+            
+            # 🔤 Keep original text for non-normalized answers
+            original_text = extracted['text']
+            
+            # ✂️ Create chunks from original text
+            chunks = self.chunk_text_by_tokens(original_text)
+            
+            # 📦 Create document objects
+            documents = []
+            for i, chunk in enumerate(chunks):
+                doc = {
+                    'content': chunk,
+                    'metadata': {
+                        **extracted['metadata'],
+                        'source_file': source_url,
+                        'filename': source_url,
+                        'chunk_id': i,
+                        'total_chunks': len(chunks),
+                        'chunk_length': len(chunk.split())
+                    }
+                }
+                documents.append(doc)
+            
+            print(f"✅ Processed XML content: {len(documents)} chunks")
+            return documents
+            
+        except Exception as e:
+            print(f"❌ Error processing XML content: {e}")
+            return []
+    
+    def process_xml_file(self, file_path: str) -> List[Dict[str, Any]]:
+        """
+        📄 Process a single XML file.
+        
+        Args:
+            file_path: Path to XML file
+            
+        Returns:
+            List of processed document chunks
+        """
+        try:
+            # 📖 Read XML file
+            with open(file_path, 'r', encoding='utf-8') as f:
+                xml_content = f.read()
+            
+            # 🔧 Extract content from XML
+            extracted = self.extract_xml_content(xml_content)
+            
+            # 🔤 Keep original text for non-normalized answers
+            original_text = extracted['text']
+            
+            # ✂️ Create chunks from original text
+            chunks = self.chunk_text_by_tokens(original_text)
+            
+            # 📦 Create document objects
+            documents = []
+            for i, chunk in enumerate(chunks):
+                doc = {
+                    'content': chunk,
+                    'metadata': {
+                        **extracted['metadata'],
+                        'source_file': file_path,
+                        'filename': os.path.basename(file_path),
+                        'chunk_id': i,
+                        'total_chunks': len(chunks),
+                        'chunk_length': len(chunk.split())
+                    }
+                }
+                documents.append(doc)
+            
+            print(f"✅ Processed {file_path}: {len(documents)} chunks")
+            return documents
+            
+        except Exception as e:
+            print(f"❌ Error processing {file_path}: {e}")
+            return []
 
 # Create an alias for compatibility
 DocumentIngestor = SimpleDocumentIngestor

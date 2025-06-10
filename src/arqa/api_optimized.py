@@ -298,17 +298,19 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
     
     start_time = datetime.now()
     
-    try:
-        # Validate file type
-        if not file.filename.endswith(('.html', '.htm')):
-            raise HTTPException(status_code=400, detail="Only HTML files are supported")
+    try:        # Validate file type - now supports both HTML and XML
+        if not file.filename.endswith(('.html', '.htm', '.xml')):
+            raise HTTPException(status_code=400, detail="Only HTML and XML files are supported")
         
         # Read file content quickly
         content = await file.read()
-        html_content = content.decode('utf-8')
+        file_content = content.decode('utf-8')
         
-        # Quick validation and preprocessing
-        documents = arqa.ingestor.process_html_content(html_content, source_url=file.filename)
+        # Quick validation and preprocessing based on file type
+        if file.filename.endswith('.xml'):
+            documents = arqa.ingestor.process_xml_content(file_content, source_url=file.filename)
+        else:
+            documents = arqa.ingestor.process_html_content(file_content, source_url=file.filename)
         
         if not documents:
             raise HTTPException(status_code=400, detail="No content could be extracted from the file")
